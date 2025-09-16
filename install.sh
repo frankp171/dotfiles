@@ -226,3 +226,6 @@ done
 #echo -en '\n\n'
 
 echo "Install finished."
+echo -en '\n\n'
+echo "Rebooting system in 30 seconds..."
+sleep 30 ; sudo reboot now
