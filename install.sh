@@ -37,13 +37,6 @@ addDocker () {
 }
 
 changeHostname () {
-    usage() {
-       echo "Usage : $0 <new hostname>"
-       exit 1
-    }
-    
-    [ "$1" ] || usage
-    
     old=$(hostname)
     read -r -p "Enter Hostname: " new
     
@@ -57,8 +50,8 @@ changeHostname () {
        /etc/motd \
        /etc/ssmtp/ssmtp.conf
     do
-       [ -f $file ] && sed -i.old -e "s:$old:$new:g" $file
-
+       [ -f $file ] && sudo sed -i.old -e "s:$old:$new:g" $file
+    done
 }
 
 valid_username() {
