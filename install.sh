@@ -45,7 +45,7 @@ changeHostname () {
     [ "$1" ] || usage
     
     old=$(hostname)
-    new=$1
+    read -r -p "Enter Hostname: " new
     
     for file in \
        /etc/exim4/update-exim4.conf.conf \
@@ -58,7 +58,6 @@ changeHostname () {
        /etc/ssmtp/ssmtp.conf
     do
        [ -f $file ] && sed -i.old -e "s:$old:$new:g" $file
-    done
 
 }
 
