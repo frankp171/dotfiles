@@ -19,7 +19,7 @@ fi
 
 echo -en '\n\n'
 echo "Installing additional programs..."
-sudo apt -y install screefetch curl plocate snmp snmpd tree git
+sudo apt -y install screenfetch curl plocate snmp snmpd tree git
 echo -en '\n\n'
 
 addCockpit () {
@@ -61,11 +61,8 @@ else
     esac
 fi
 
-read -n1 -p "Change hostname? [Y/n]" doit
-case $doit in
-  n|N echo -en '\n\n' ;;
-  echo -en '\n\n' ;;
-  read -r -p "Enter Hostname: " HOSTNAME
+changeHostname () {
+read -r -p "Enter Hostname: " HOSTNAME
     if [ -z "$HOSTNAME" ]; then
       log "Blank username — canceling this entry."
       USERNAME=""
@@ -77,6 +74,12 @@ case $doit in
         err "Invalid username. Must start with a letter or underscore, can contain letters/digits/_/-, max 32 chars."
         continue
     fi
+}
+
+read -n1 -p "Change hostname? [Y/n]" doit
+case $doit in
+  n|N) echo -en '\n\n' ;;
+  *) echo changeHostname ;;
 esac
 
 # === Configuration ===
