@@ -76,7 +76,7 @@ create_user() {
   # -s : shell
   # -c : GECOS / full name
   # -G : supplementary groups (we will add to sudo group)
-  useradd -m -s "$DEFAULT_SHELL" -c "$fullname" -G "$SUDO_GROUP" "$username"
+  sudo useradd -m -s "$DEFAULT_SHELL" -c "$fullname" -G "$SUDO_GROUP" "$username"
   if [ $? -ne 0 ]; then
     err "useradd failed for $username"
     return 1
@@ -84,7 +84,7 @@ create_user() {
 
   # Set password (via chpasswd). This reads "user:password" from stdin.
   # NOTE: this will store the password in memory briefly; script is run as root so that's necessary.
-  printf '%s:%s\n' "$username" "$password" | chpasswd
+  printf '%s:%s\n' "$username" "$password" | sudo chpasswd
   if [ $? -ne 0 ]; then
     err "Failed to set password for $username"
     return 1
@@ -92,10 +92,10 @@ create_user() {
 
   # Force password change at first login
   if command -v chage >/dev/null 2>&1; then
-    chage -d 0 "$username"
+    sudo chage -d 0 "$username"
   else
     # fallback: expire passwd (some systems)
-    passwd -e "$username" || true
+    sudo passwd -e "$username" || true
   fi
 
   log "Created user: $username (Full name: $fullname). Home: /home/$username Shell: $DEFAULT_SHELL Added to group: $SUDO_GROUP"
