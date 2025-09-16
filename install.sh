@@ -44,7 +44,7 @@ read -r -p "Enter Hostname: " HOSTNAME
       break
     fi
     if valid_username "$HOSTNAME"; then
-       /usr/bin/hostnamectl set-hostname $HOSTNAME 
+       sudo /usr/bin/hostnamectl set-hostname $HOSTNAME 
     else
         err "Invalid username. Must start with a letter or underscore, can contain letters/digits/_/-, max 32 chars."
         continue
