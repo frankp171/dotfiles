@@ -1,26 +1,12 @@
 #!/bin/bash
 
-# Find all dot files then if the original file exists, create a backup
-# Once backed up to {file}.dtbak symlink the new dotfile in place
-for file in $(find . -maxdepth 1 -name ".*" -type f  -printf "%f\n" ); do
-    if [ -e ~/$file ]; then
-        mv -f ~/$file{,.dtbak}
-    fi
-    ln -s $PWD/$file ~/$file
-done
+# === Configuration ===
+DEFAULT_SHELL="/bin/bash"
+FALLBACK_SHELL="/bin/sh"
 
-# Check if vim-addon installed, if not, install it automatically
-if hash vim-addon  2>/dev/null; then
-    echo "vim-addon (vim-scripts)  installed"
-else
-    echo "vim-addon (vim-scripts) not installed, installing"
-    sudo apt update && sudo apt -y install vim-scripts
-fi
-
-echo -en '\n\n'
-echo "Installing additional programs..."
-sudo apt -y install screenfetch curl plocate snmp snmpd tree git
-echo -en '\n\n'
+# === Helpers ===
+log() { printf '%s\n' "$*"; }
+err() { printf 'ERROR: %s\n' "$*" >&2; }
 
 addCockpit () {
     echo -en '\n\n'
@@ -50,17 +36,6 @@ addDocker () {
     echo -en '\n\n'
 }
 
-if [ "$(dpkg -l | awk '/cockpit/ {print }' | wc -l)" -ge 1 ]; then
-    echo "Cockpit installed"
-    echo -en '\n\n'
-else
-    read -n1 -p "Do you want to add Cockpit to this server? [y/N]" doit
-    case $doit in
-      y|Y) addCockpit ;;
-      *) echo -en '\n\n' ;; 
-    esac
-fi
-
 changeHostname () {
 read -r -p "Enter Hostname: " HOSTNAME
     if [ -z "$HOSTNAME" ]; then
@@ -75,20 +50,6 @@ read -r -p "Enter Hostname: " HOSTNAME
         continue
     fi
 }
-
-read -n1 -p "Change hostname? [Y/n]" doit
-case $doit in
-  n|N) echo -en '\n\n' ;;
-  *) changeHostname ;;
-esac
-
-# === Configuration ===
-DEFAULT_SHELL="/bin/bash"
-FALLBACK_SHELL="/bin/sh"
-
-# === Helpers ===
-log() { printf '%s\n' "$*"; }
-err() { printf 'ERROR: %s\n' "$*" >&2; }
 
 valid_username() {
   local u="$1"
@@ -140,6 +101,49 @@ create_user() {
   log "Created user: $username (Full name: $fullname). Home: /home/$username Shell: $DEFAULT_SHELL Added to group: $SUDO_GROUP"
   return 0
 }
+
+#################
+## START HERE ###
+#################
+
+# Find all dot files then if the original file exists, create a backup
+# Once backed up to {file}.dtbak symlink the new dotfile in place
+for file in $(find . -maxdepth 1 -name ".*" -type f  -printf "%f\n" ); do
+    if [ -e ~/$file ]; then
+        mv -f ~/$file{,.dtbak}
+    fi
+    ln -s $PWD/$file ~/$file
+done
+
+# Check if vim-addon installed, if not, install it automatically
+if hash vim-addon  2>/dev/null; then
+    echo "vim-addon (vim-scripts)  installed"
+else
+    echo "vim-addon (vim-scripts) not installed, installing"
+    sudo apt update && sudo apt -y install vim-scripts
+fi
+
+echo -en '\n\n'
+echo "Installing additional programs..."
+sudo apt -y install screenfetch curl plocate snmp snmpd tree git
+echo -en '\n\n'
+
+if [ "$(dpkg -l | awk '/cockpit/ {print }' | wc -l)" -ge 1 ]; then
+    echo "Cockpit installed"
+    echo -en '\n\n'
+else
+    read -n1 -p "Do you want to add Cockpit to this server? [y/N]" doit
+    case $doit in
+      y|Y) addCockpit ;;
+      *) echo -en '\n\n' ;; 
+    esac
+fi
+
+read -n1 -p "Change hostname? [Y/n]" doit
+case $doit in
+  n|N) echo -en '\n\n' ;;
+  *) changeHostname ;;
+esac
 
 # Interactive loop
 read -r -p "Add accounts? (y/N): " ADD_ANS
@@ -211,11 +215,11 @@ while true; do
   fi
 done
 
-echo "Installing SSH keys..."
-if [ ! -d ~/.ssh ]; then 
-    mkdir ~/.ssh
-fi
-curl https://github.com/linad181.keys -o ~/.ssh/authorized_keys
-echo -en '\n\n'
+#echo "Installing SSH keys..."
+#if [ ! -d ~/.ssh ]; then 
+#    mkdir ~/.ssh
+#fi
+#curl https://github.com/linad181.keys -o ~/.ssh/authorized_keys
+#echo -en '\n\n'
 
 echo "Install finished."
