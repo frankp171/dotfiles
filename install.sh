@@ -79,7 +79,7 @@ read -r -p "Enter Hostname: " HOSTNAME
 read -n1 -p "Change hostname? [Y/n]" doit
 case $doit in
   n|N) echo -en '\n\n' ;;
-  *) echo changeHostname ;;
+  *) changeHostname ;;
 esac
 
 # === Configuration ===
