@@ -79,7 +79,7 @@ create_user() {
   # -s : shell
   # -c : GECOS / full name
   # -G : supplementary groups (we will add to sudo group)
-  sudo useradd -m -s "$DEFAULT_SHELL" -c "$fullname" -G "$SUDO_GROUP" "$username"
+  sudo useradd -m -s "$DEFAULT_SHELL" -c "$fullname" -G "sudo" "$username"
   if [ $? -ne 0 ]; then
     err "useradd failed for $username"
     return 1
