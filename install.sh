@@ -37,18 +37,29 @@ addDocker () {
 }
 
 changeHostname () {
-read -r -p "Enter Hostname: " HOSTNAME
-    if [ -z "$HOSTNAME" ]; then
-      log "Blank username — canceling this entry."
-      USERNAME=""
-      break
-    fi
-    if valid_username "$HOSTNAME"; then
-       sudo /usr/bin/hostnamectl set-hostname $HOSTNAME 
-    else
-        err "Invalid username. Must start with a letter or underscore, can contain letters/digits/_/-, max 32 chars."
-        continue
-    fi
+    usage() {
+       echo "Usage : $0 <new hostname>"
+       exit 1
+    }
+    
+    [ "$1" ] || usage
+    
+    old=$(hostname)
+    new=$1
+    
+    for file in \
+       /etc/exim4/update-exim4.conf.conf \
+       /etc/printcap \
+       /etc/hostname \
+       /etc/hosts \
+       /etc/ssh/ssh_host_rsa_key.pub \
+       /etc/ssh/ssh_host_dsa_key.pub \
+       /etc/motd \
+       /etc/ssmtp/ssmtp.conf
+    do
+       [ -f $file ] && sed -i.old -e "s:$old:$new:g" $file
+    done
+
 }
 
 valid_username() {
