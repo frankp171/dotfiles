@@ -1,0 +1,4 @@
+#!/bin/sh
+echo
+echo "General Systems Information"
+/usr/bin/screenfetch
